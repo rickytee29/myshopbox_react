@@ -7,12 +7,8 @@ const countryReducer = (country=null, action) =>{
     }
 }
 
-const rootReducer =  combineReducers(
-    //Default Setup for RootReducer
-    {
-        state:(state = {})=>state
-    }
-    //TODO add custom reducers HERE
-);
+const rootReducer =  combineReducers({
+   country:countryReducer
+});
 
 export default rootReducer;
