@@ -1,0 +1,12 @@
+/* Variables */
+$vin-red: #ff0000;
+@media (max-width: 768px) {
+  .dropdown-menu {
+    min-width: 3rem !important;
+  }
+}
+/* Styles */
+body {
+}
+
+@import '~bootstrap/scss/bootstrap';
