@@ -1,12 +1,23 @@
 import { combineReducers } from 'redux';
 // import { routerReducer } from 'react-router-redux';
-import fetchUser from './fetchUser';
+
 import fetchCountry from './fetchCountry';
 import changeCountry from './changeCountry';
+import loginOutUser from './loginOutUser';
+import {
+  showHideLoginModal,
+  showHideRegisterModal,
+  showHideLoader,
+  changeLogo,
+} from '../reducers';
 
 export default combineReducers({
   browserCountryCode: fetchCountry,
   userCountryCode: changeCountry,
-  userData: fetchUser,
+  userData: loginOutUser,
+  isLoggingIn: showHideLoginModal,
+  isReggingIn: showHideRegisterModal,
+  isLoading: showHideLoader,
+  logoSrc: changeLogo,
   // routing: routerReducer,
 });

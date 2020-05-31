@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+
 import NavBar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
@@ -7,15 +7,14 @@ import ReactCountryFlag from 'react-country-flag';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 //import FadeIn from 'react-fade-in';
-import { changeCountry, loginUser } from '../actions';
+//import { changeCountry, loginUser } from '../actions';
 import Container from 'react-bootstrap/Container';
 import WindowSizeListener from 'react-window-size-listener';
-import windowSize from 'react-window-size';
+//import windowSize from 'react-window-size';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Input from 'react-bootstrap/InputGroup';
 
-class App extends Component {
+export default class Home extends Component {
   logos = {
     SL: {
       url: '../img/logo_shopbox_desktop.png',
@@ -24,27 +23,26 @@ class App extends Component {
     },
     DM: {
       url: '../img/logo_dominica.png',
-      w: 150,
-      h: 50,
+      w: 200,
+      h: 75,
     },
     GD: {
       url: '../img/logo_grenada.png',
-      w: 150,
-      h: 50,
+      w: 200,
+      h: 75,
     },
     BB: {
       url: '../img/logo_barbados.png',
-      w: 150,
-      h: 50,
+      w: 250,
+      h: 60,
     },
   };
   state = {
-    countryEntered: '',
-    tempVal: '',
-    secondVal: '',
-    screenWidth: '',
-    logoSrc: this.logos.SL,
     isLoading: true,
+    logogSrc: '',
+    isLogin: false,
+    isRegister: false,
+    logoSrc: '',
   };
   renderNavLinks() {
     if (this.state.screenWidth >= 768) {
@@ -138,8 +136,14 @@ class App extends Component {
             </NavDropdown.Item>
           </NavDropdown>
           <Nav.Link>
-            <Button variant="primary" size="sm" onClick={this.onLoginClick}>
-              Login
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={
+                this.props.userData ? this.onLogoutClick : this.onLoginClick
+              }
+            >
+              {this.props.userData ? 'Logout' : 'Login'}
             </Button>
           </Nav.Link>
           <Nav.Link>
@@ -148,7 +152,7 @@ class App extends Component {
               size="sm"
               onClick={this.onRegisterClick}
             >
-              Sign up
+              {this.props.userData ? 'Profile' : 'Sign up'}
             </Button>
           </Nav.Link>
           <Nav.Link>
@@ -288,18 +292,17 @@ class App extends Component {
   }
   //TODO REPLACE WITH ONSUBMIT FROM MODAL
   onLoginClick = () => {
-    this.props.loginUser('100', 'V2KbeGYB2!4');
+    this.props.showLoginModal();
   };
-
+  onLogoutClick = () => {
+    this.props.logoutUser(this.state);
+  };
   onCountrySelect = (e) => {
     //this.props.changeCountry('TT');
     this.setState({ isLoading: true });
     this.props.changeCountry(e);
     this.changeRoute(e);
     this.changeLogo(e);
-    setTimeout(() => {
-      this.setState({ isLoading: false });
-    }, 2000);
   };
   changeLogo(code) {
     switch (code) {
@@ -316,6 +319,7 @@ class App extends Component {
         this.setState({ logoSrc: this.logos.SL });
         break;
       default:
+        this.setState({ logoSrc: this.logos.SL });
         break;
     }
   }
@@ -346,6 +350,7 @@ class App extends Component {
     }
   }
   componentDidMount() {
+    this.setState({ ...this.state, ...this.props });
     this.changeRoute(this.props.userCountryCode);
     this.changeLogo(this.props.userCountryCode);
     this.renderNavLinks();
@@ -356,21 +361,6 @@ class App extends Component {
   render() {
     return (
       <Container fluid style={{ padding: '0px' }}>
-        <div
-          style={{
-            position: 'absolute',
-            zIndex: '300',
-            width: '100%',
-            height: '100vh',
-            backgroundColor: '#fff',
-            visibility: this.state.isLoading ? 'display' : 'hidden',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Spinner animation="border" variant="primary" />
-        </div>
         <WindowSizeListener
           onResize={(windowSize) => {
             this.onResize(windowSize.windowWidth);
@@ -404,13 +394,3 @@ class App extends Component {
     );
   }
 }
-
-// const mapDispatchToProps = (countryCode) => ({
-//   //changeCountry: (countryCode) => dispatch(changeCountry(countryCode)),
-// });
-const mapStateToProps = (state) => {
-  return state;
-};
-export default connect(mapStateToProps, { changeCountry, loginUser })(
-  windowSize(App)
-);

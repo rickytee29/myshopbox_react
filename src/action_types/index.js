@@ -1,6 +1,14 @@
 export const COUNTRY_CHANGED = 'Country changed';
+export const LOGO_CHANGED = 'Logo changed';
 export const COUNTRY_FETCHED = 'Country fetched';
 export const USER_FETCHED = 'User fetched';
+export const LOGIN_MODAL_SHOW = 'Login Modal Show';
+export const LOGIN_MODAL_HIDE = 'Login Modal Hide';
+export const REGISTER_MODAL_SHOW = 'Register Modal Show';
+export const REGISTER_MODAL_HIDE = 'Register Modal Hide';
 export const USER_LOGGED_IN = 'User logged in';
 export const USER_LOGGED_OUT = 'User logged out';
+export const ERROR_FINDING_USER = 'Error Finding User';
 export const ITEM_SELECTED = 'Item selected';
+export const IS_LOADING = 'Loading';
+export const IS_NOT_LOADING = 'Loading Done';

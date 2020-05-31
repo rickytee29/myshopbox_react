@@ -1,5 +1,5 @@
 import * as Action from '../action_types';
-import { REHYDRATE } from 'redux-persist';
+
 const changeCountry = (countryCode = 'TT', action) => {
   switch (action.type) {
     case Action.COUNTRY_CHANGED:
