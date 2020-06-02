@@ -1,8 +1,111 @@
 /* Variables */
 $vin-red: #ff0000;
+#home .carousel-control-prev-icon {
+  visibility: hidden;
+}
+#home .carousel-control-next-icon {
+  visibility: hidden;
+}
+#home #c-caption {
+  display: flex;
+  flex-direction: column;
+}
+#home #buttonBar {
+  align-self: flex-end;
+}
+#home {
+  background-image: url('/img/carouselback.svg') !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: bottom;
+  width: 100%;
+}
+.homeCard {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  background-color: white;
+  padding: 10px 30px 30px 30px;
+  border-radius: 10px;
+  height: 100%;
+  box-shadow: -1px 3px 10px 0 rgba($color: #000000, $alpha: 0.5);
+  border: 1px solid rgba(110, 126, 143, 0.1);
+}
+.homeCard p {
+  font-size: smaller;
+}
+.homeCard img {
+  vertical-align: middle;
+  height: 150px;
+  width: 150px;
+}
+.grows {
+  -webkit-transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -ms-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+}
+.grows:hover {
+  -webkit-transform: scale(1.05);
+  -moz-transform: scale(1.05);
+  -ms-transform: scale(1.05);
+  -o-transform: scale(1.05);
+  transform: scale(1.05);
+}
+.dashboardNav .searchBar {
+  margin-right: 1rem;
+  align-self: center;
+  justify-self: center;
+}
+#search-popover {
+  min-width: 400px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+#search-popover #hawb {
+  align-self: flex-end;
+}
+@media (min-width: 1120px) {
+  .dashboardNav .searchBar {
+    width: 50%;
+  }
+}
+@media (max-width: 1024px) {
+  .dashboardNav #logo {
+    display: none;
+  }
+}
+@media (max-width: 360px) {
+  .dashboardNav .searchBar {
+    margin-right: 0rem;
+    width: 250px;
+  }
+  #search-popover {
+    min-width: 350px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+}
+
 @media (max-width: 768px) {
   .dropdown-menu {
     min-width: 3rem !important;
+  }
+  #home #secondButton {
+    margin-left: 0rem;
+  }
+  #home #c-image {
+    padding-top: 1rem;
+  }
+  .dashboardNav .searchbar {
+    margin-right: 0rem;
+    width: 400px !important;
+  }
+}
+@media (min-width: 768px) {
+  #home #secondButton {
+    margin-left: 1rem;
   }
 }
 /* Styles */

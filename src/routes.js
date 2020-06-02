@@ -12,6 +12,6 @@ export default (
     <Route exact path="/barbados" component={PageOneContainer} />
     <Route exact path="/grenada" component={PageOneContainer} />
     <Route exact path="/dominica" component={PageOneContainer} />
-    <Route exact path="/dashboard" component={PageTwoContainer} />
+    <Route exact path="*/dashboard" component={PageTwoContainer} />
   </>
 );

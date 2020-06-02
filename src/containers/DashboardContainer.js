@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import FakeLoader from '../components/FakeLoader';
 import PageTwo from '../components/Dashboard/PageTwo';
+import DashNav from '../components/Navigation/Top/Dash';
 import {
   changeCountry,
   fetchCountry,
@@ -20,7 +21,7 @@ export const Container = (props) => {
   return (
     <>
       <FakeLoader {...props} />
-
+      <DashNav {...props} />
       <PageTwo {...props} />
     </>
   );

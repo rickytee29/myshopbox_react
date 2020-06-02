@@ -7,6 +7,7 @@ export default class FakeLoader extends React.Component {
       this.props.hideLoader();
     }, 2000);
   }
+  componentWillUnmount() {}
   render() {
     return (
       <div

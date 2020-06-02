@@ -4,8 +4,15 @@ import NavBar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import ReactCountryFlag from 'react-country-flag';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
-import Spinner from 'react-bootstrap/Spinner';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faSearch } from '@fortawesome/free-solid-svg-icons';
+import Modal from 'react-bootstrap/Modal';
+import Popover from 'react-bootstrap/Popover';
+import Overlay from 'react-bootstrap/Overlay';
 //import FadeIn from 'react-fade-in';
 //import { changeCountry, loginUser } from '../actions';
 import Container from 'react-bootstrap/Container';
@@ -14,7 +21,7 @@ import WindowSizeListener from 'react-window-size-listener';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-export default class Home extends Component {
+export default class Dash extends Component {
   logos = {
     SL: {
       url: '../img/logo_shopbox_desktop.png',
@@ -43,18 +50,16 @@ export default class Home extends Component {
     isLogin: false,
     isRegister: false,
     logoSrc: '',
+    show: false,
+    target: null,
+    searchVal: '',
+    filtered: [],
   };
+
   renderNavLinks() {
     if (this.state.screenWidth >= 768) {
       return (
         <Nav className="ml-auto justify-content-between">
-          <Nav.Link active data-toggle="tab">
-            Home
-          </Nav.Link>
-          <Nav.Link data-toggle="tab">Rates</Nav.Link>
-          <Nav.Link data-toggle="tab">Services</Nav.Link>
-          <Nav.Link data-toggle="tab">FAQ's</Nav.Link>
-
           <NavDropdown
             title="Country"
             id="collasible-nav-dropdown"
@@ -136,27 +141,13 @@ export default class Home extends Component {
             </NavDropdown.Item>
           </NavDropdown>
           <Nav.Link>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={
-                this.props.userData ? this.onLogoutClick : this.onLoginClick
-              }
-            >
-              {this.props.userData ? 'Logout' : 'Login'}
+            <Button variant="primary" size="sm" onClick={this.onPreAlertClick}>
+              Set Prealert
             </Button>
           </Nav.Link>
           <Nav.Link>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={
-                this.props.userData
-                  ? this.props.history.push('/dashboard')
-                  : this.onRegisterClick
-              }
-            >
-              {this.props.userData ? 'Profile' : 'Sign up'}
+            <Button variant="secondary" size="sm" onClick={this.onPayNowClick}>
+              Pay Now
             </Button>
           </Nav.Link>
           <Nav.Link>
@@ -192,8 +183,8 @@ export default class Home extends Component {
             <Nav.Link data-toggle="tab">FAQ's</Nav.Link>
           </Col>
           <Col>
-            <Nav.Link onClick={this.onLoginClick}>Login</Nav.Link>
-            <Nav.Link onClick={this.onRegisterClick}>Sign up</Nav.Link>
+            <Nav.Link onClick={this.onPreAlertClick}>Set Prealert</Nav.Link>
+            <Nav.Link onClick={this.onPayNowClick}>Pay Now</Nav.Link>
           </Col>
           <Col>
             <NavDropdown title="Country" id="collasible-nav-dropdown">
@@ -284,8 +275,8 @@ export default class Home extends Component {
             <Nav.Link data-toggle="tab">FAQ's</Nav.Link>
           </Col>
           <Col>
-            <Nav.Link onClick={this.onLoginClick}>Login</Nav.Link>
-            <Nav.Link onClick={this.onRegisterClick}>Sign up</Nav.Link>
+            <Nav.Link onClick={this.onPreAlertClick}>Prealert</Nav.Link>
+            <Nav.Link onClick={this.onPayNowClick}>Pay</Nav.Link>
           </Col>
         </Row>
       );
@@ -295,15 +286,15 @@ export default class Home extends Component {
     this.setState({ screenWidth: width });
   }
   //TODO REPLACE WITH ONSUBMIT FROM MODAL
-  onLoginClick = () => {
-    this.props.showLoginModal();
+  onPreAlertClick = () => {
+    //this.props.showLoginModal();//show prealert modal
   };
-  onLogoutClick = () => {
-    this.props.logoutUser(this.state);
+  onPayNowClick = () => {
+    //show paynow modal
   };
   onCountrySelect = (e) => {
     //this.props.changeCountry('TT');
-    this.props.showLoader();
+    this.setState({ isLoading: true });
     this.props.changeCountry(e);
     this.changeRoute(e);
     this.changeLogo(e);
@@ -330,19 +321,18 @@ export default class Home extends Component {
   changeRoute(code) {
     switch (code) {
       case 'BB':
-        this.props.history.push('/barbados');
+        this.props.history.push('/barbados/dashboard');
         break;
       case 'GD':
-        this.props.history.push('/grenada');
+        this.props.history.push('/grenada/dashboard');
         break;
       case 'DM':
-        this.props.history.push('/dominica');
+        this.props.history.push('/dominica/dashboard');
         break;
       case 'SL':
-        this.props.history.push('/st-lucia');
+        this.props.history.push('/st-lucia/dashbord');
         break;
       default:
-        this.props.history.push('/');
         break;
     }
   }
@@ -354,47 +344,144 @@ export default class Home extends Component {
     }
   }
   componentDidMount() {
-    this.setState({ ...this.state, ...this.props });
+    this.setState({
+      ...this.state,
+      ...this.props,
+    });
     this.changeRoute(this.props.userCountryCode);
     this.changeLogo(this.props.userCountryCode);
     this.renderNavLinks();
     setTimeout(() => {
       this.setState({ isLoading: false });
     }, 2000);
+    console.log('FILTEREWSA: ' + this.state.filtered);
+  }
+  onSearchClick = (event) => {
+    console.log(event.currentTarget);
+    this.state.show === true
+      ? this.setState({ show: false, target: event.target })
+      : this.setState({ show: true, target: event.target });
+  };
+  onSearchChange = (event) => {
+    //this.setState({ searchVal: event.target.value });
+    this.setState({
+      searchVal: event.target.value,
+    });
+    let res = this.state.userData.packages.filter((item) => {
+      var description = item.description;
+      var searchVal = event.target.value;
+      return description.toLowerCase().indexOf(searchVal.toLowerCase()) > -1;
+    });
+    this.setState({
+      filtered: res,
+    });
+    console.log(res);
+  };
+  renderFiltered(filteredArray) {
+    if (filteredArray.length > 0) {
+      return filteredArray.map((item) => {
+        return (
+          <>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                minWidth: '100%',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div style={{ marginRight: '2rem' }}>{item.description}</div>
+              <div
+                id="hawb"
+                style={{
+                  color: 'green',
+                }}
+              >
+                {item.code}
+              </div>
+            </div>
+            <hr></hr>
+          </>
+        );
+      });
+    } else {
+      return <div>No Search Result...</div>;
+    }
   }
   render() {
     return (
-      <Container fluid style={{ padding: '0px' }}>
-        <WindowSizeListener
-          onResize={(windowSize) => {
-            this.onResize(windowSize.windowWidth);
-          }}
-        />
-        <NavBar
-          bg="light"
-          expand="md"
-          style={{
-            minHeight: '75px',
-          }}
+      <>
+        <div
+          className="dashboardNav"
+          style={{ display: 'flex', flexDirection: 'row' }}
         >
-          <NavBar.Brand href="#">
-            <img
-              className="d-sm-flex"
-              // src="https://via.placeholder.com/250x50"
-              src={this.state.logoSrc.url}
-              alt="My Shopbox"
-              style={{
-                width: this.state.logoSrc.w,
-                height: this.state.logoSrc.h,
+          <Container fluid style={{ padding: '0px' }}>
+            <WindowSizeListener
+              onResize={(windowSize) => {
+                this.onResize(windowSize.windowWidth);
               }}
-            ></img>
-          </NavBar.Brand>
-          <NavBar.Toggle aria-controls="responsive-navbar-nav" />
-          <NavBar.Collapse id="responsive-navbar-nav">
-            {this.renderNavLinks()}
-          </NavBar.Collapse>
-        </NavBar>
-      </Container>
+            />
+            <NavBar
+              bg="light"
+              expand="md"
+              style={{
+                minHeight: '75px',
+              }}
+            >
+              <NavBar.Brand href="#" id="logo">
+                <img
+                  className="d-sm-flex"
+                  // src="https://via.placeholder.com/250x50"
+                  src={this.state.logoSrc.url}
+                  alt="My Shopbox"
+                  style={{
+                    width: this.state.logoSrc.w,
+                    height: this.state.logoSrc.h,
+                  }}
+                ></img>
+              </NavBar.Brand>
+              <div className="searchBar">
+                <InputGroup>
+                  <InputGroup.Prepend>
+                    <Button variant="outline-secondary">
+                      <FontAwesomeIcon icon={faSearch} />
+                    </Button>
+                  </InputGroup.Prepend>
+
+                  <FormControl
+                    placeholder="Search Packages"
+                    aria-label="Search Packages"
+                    value={this.state.searchVal}
+                    onChange={this.onSearchChange}
+                    onClick={this.onSearchClick}
+                  />
+                  <Overlay
+                    show={this.state.show}
+                    target={this.state.target}
+                    placement="bottom"
+                  >
+                    <Popover id="search-popover">
+                      <Popover.Content>
+                        {this.renderFiltered(this.state.filtered)}
+                      </Popover.Content>
+                    </Popover>
+                  </Overlay>
+                  <InputGroup.Append>
+                    <Button variant="outline-secondary">
+                      <FontAwesomeIcon icon={faUser} />
+                    </Button>
+                  </InputGroup.Append>
+                </InputGroup>{' '}
+              </div>
+
+              <NavBar.Toggle aria-controls="responsive-navbar-nav" />
+              <NavBar.Collapse id="responsive-navbar-nav">
+                {this.renderNavLinks()}
+              </NavBar.Collapse>
+            </NavBar>
+          </Container>
+        </div>
+      </>
     );
   }
 }
